@@ -1,0 +1,620 @@
+<!DOCTYPE html>  
+<html lang="ar" dir="rtl">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Shako Burger | نظام طلبات متطور</title>  
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">  
+    <style>  
+        :root {  
+            --primary: #c62828;  
+            --secondary: #ffb300;  
+            --dark: #121212;  
+            --white: #ffffff;  
+            --remove-color: #e53935;  
+            --add-color: #43a047;  
+            --blue: #1e88e5;  
+            --light-gray: #f9f9f9;  
+        }  
+        
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Cairo', sans-serif; 
+        }  
+        
+        body { 
+            background: linear-gradient(135deg, #f5f5f5 0%, #efefef 100%);
+            color: var(--dark); 
+            padding-bottom: 120px;
+            min-height: 100vh;
+        }  
+
+        header { 
+            background: linear-gradient(135deg, var(--dark) 0%, #1a1a1a 100%);
+            padding: 1.5rem; 
+            text-align: center; 
+            border-bottom: 3px solid var(--secondary); 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }  
+        
+        .logo { 
+            color: var(--secondary); 
+            font-size: 2rem; 
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }  
+
+        .container { 
+            max-width: 650px; 
+            margin: 0 auto; 
+            padding: 1.5rem;
+        }  
+        
+        .step { 
+            display: none; 
+            animation: slideUp 0.4s ease-out;
+        }  
+        
+        .step.active { 
+            display: block; 
+        }  
+        
+        @keyframes slideUp { 
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            } 
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            } 
+        }  
+
+        .card { 
+            background: var(--white); 
+            border-radius: 18px; 
+            padding: 1.5rem; 
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            margin-bottom: 1.2rem; 
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+
+        .item-actions { 
+            display: flex; 
+            gap: 10px; 
+            margin-top: 10px; 
+        }  
+        
+        .btn-sm { 
+            padding: 8px 15px; 
+            border-radius: 8px; 
+            font-size: 0.85rem; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: bold; 
+            display: flex; 
+            align-items: center; 
+            gap: 5px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-sm:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-edit { 
+            background: #e3f2fd; 
+            color: var(--blue);
+        }
+        
+        .btn-edit:hover {
+            background: #bbdefb;
+        }
+        
+        .btn-delete { 
+            background: #ffebee; 
+            color: var(--remove-color);
+        }
+        
+        .btn-delete:hover {
+            background: #ffcdd2;
+        }
+
+        .option-group { 
+            margin-bottom: 1.5rem; 
+        }  
+        
+        .tile { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 12px; 
+            background: var(--light-gray); 
+            border-radius: 12px; 
+            margin-bottom: 8px; 
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .tile:hover {
+            border-color: var(--primary);
+            background: #fff;
+        }
+
+        .qty-control { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+        }  
+        
+        .btn-circle { 
+            width: 34px; 
+            height: 34px; 
+            border-radius: 50%; 
+            border: none; 
+            background: linear-gradient(135deg, var(--primary), #e63946);
+            color: white; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.2rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(198, 40, 40, 0.3);
+        }
+        
+        .btn-circle:active {
+            transform: scale(0.9);
+        }
+        
+        .btn-circle:hover {
+            box-shadow: 0 6px 15px rgba(198, 40, 40, 0.4);
+        }
+
+        .invoice-section { 
+            margin-top: 8px; 
+            padding: 10px; 
+            border-radius: 10px; 
+            font-size: 0.9rem;
+            animation: fadeIn 0.3s ease;
+        }  
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .section-removals { 
+            background: #fff5f5; 
+            border-right: 4px solid var(--remove-color);
+        }  
+        
+        .section-adds { 
+            background: #f5fff6; 
+            border-right: 4px solid var(--add-color);
+        }  
+
+        .footer { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: linear-gradient(135deg, var(--dark), #1a1a1a);
+            padding: 15px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            z-index: 1001;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }  
+        
+        .total-price { 
+            color: var(--secondary); 
+            font-size: 1.4rem; 
+            font-weight: 900;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }  
+          
+        .btn-group { 
+            display: flex; 
+            gap: 10px; 
+            width: 60%; 
+        }  
+        
+        .btn-next { 
+            flex: 2; 
+            background: linear-gradient(135deg, var(--secondary), #ffa500);
+            color: var(--dark); 
+            border: none; 
+            padding: 12px; 
+            border-radius: 10px; 
+            font-weight: 700; 
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(255, 179, 0, 0.3);
+        }
+        
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 179, 0, 0.4);
+        }
+        
+        .btn-next:active {
+            transform: translateY(0);
+        }
+        
+        .btn-home { 
+            flex: 1; 
+            background: #444; 
+            color: white; 
+            border: none; 
+            padding: 12px; 
+            border-radius: 10px; 
+            font-weight: 700; 
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-home:hover {
+            background: #555;
+        }
+
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 10px; 
+            border: 2px solid #ddd; 
+            margin-top: 5px;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(198, 40, 40, 0.2);
+        }
+        
+        input::placeholder {
+            color: #999;
+        }
+        
+        .progress-bar {
+            height: 3px;
+            background: var(--secondary);
+            position: sticky;
+            top: 69px;
+            width: 100%;
+            z-index: 999;
+        }
+        
+        .order-number {
+            background: linear-gradient(135deg, var(--primary), #e63946);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: var(--secondary);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+            margin-left: 5px;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+    </style>
+
+</head>  
+<body>
+    <div class="progress-bar"></div>
+    
+    <header><div class="logo">SHAKO BURGER 🍔</div></header>  
+    
+    <div class="container">  
+        <div id="step1" class="step active">  
+            <div class="card" style="text-align:center; padding: 2rem 1rem;">  
+                <div style="font-size: 5rem; margin-bottom: 15px; animation: bounce 2s infinite;">🍔</div>  
+                <h1 style="color: var(--primary); margin-bottom: 20px; font-size: 2.5rem;">شاكو سبيشيال برجر</h1>  
+                <p style="margin-bottom: 20px; color: #666; font-size: 1.6rem; font-weight: 600;">ساندوتش البرجر المحشي بالجبنة (120 ج)</p>  
+                
+                <div style="background: linear-gradient(135deg, #fff5f0, #fff9e6); padding: 15px; border-radius: 12px; margin-bottom: 20px; border-right: 4px solid var(--secondary);">
+                    <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 1.1rem;">🥗 المكونات الأساسية:</h3>
+                    <ul style="text-align: right; list-style: none; font-size: 0.95rem; color: #555; line-height: 1.8;">
+                        <li>✓ قطعة برجر شهية</li>
+                        <li>✓ شريحة جبنة شيدر</li>
+                        <li>✓ طماطم طازة</li>
+                        <li>✓ بصل مقرمش</li>
+                        <li>✓ كابوتشي طازة</li>
+                        <li>✓ صوص البرجر الخاص</li>
+                    </ul>
+                </div>
+                
+                <div class="qty-control" style="justify-content: center; gap: 20px;">  
+                    <button class="btn-circle" style="width:50px; height:50px;" onclick="changeMainQty(-1)">−</button>  
+                    <span id="mainQtyDisplay" style="font-size: 2.5rem; font-weight: 900; min-width: 60px;">1</span>  
+                    <button class="btn-circle" style="width:50px; height:50px;" onclick="changeMainQty(1)">+</button>  
+                </div>  
+                <button class="btn-next" style="width:100%; margin-top: 30px; font-size: 1.1rem;" onclick="initSandwiches()">تخصيص الطلب الآن</button>  
+            </div>  
+        </div>  
+        
+        <div id="step2" class="step">  
+            <h2 style="text-align: center; margin-bottom: 1rem;">خصص ساندوتشاتك 👨‍🍳</h2>  
+            <div id="burgerList"></div>  
+        </div>  
+
+        <div id="step3" class="step">  
+            <div class="card">  
+                <div class="order-number">رقم الطلب: <span id="orderNumber">-</span></div>
+                <h3>📍 بيانات التوصيل</h3>  
+                <input type="text" id="custName" placeholder="الاسم الكامل" autocomplete="name">  
+                <input type="tel" id="custPhone" placeholder="رقم الموبايل" autocomplete="tel">  
+                <input type="text" id="custAddress" placeholder="العنوان (المنطقة - الشارع - علامة مميزة)" autocomplete="address-line1">  
+            </div>  
+            <div id="billDetails"></div>  
+        </div>
+
+    </div>  
+    
+    <div class="footer" id="footerBar" style="display: none;">  
+        <div>  
+            <div style="color: #bbb; font-size: 0.75rem;">الإجمالي:</div>  
+            <div class="total-price"><span id="totalValue">0</span> <small>ج</small></div>  
+        </div>  
+        <div class="btn-group" id="actionArea"></div>  
+    </div>  
+    
+    <script>
+        // Bounce animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-20px); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        let sandwiches = [];  
+        const BASE_PRICE = 120;  
+        const ADDONS = { burger: 75, egg: 10, cheese: 15 };  
+        const NAMES = { burger: 'برجر محشي', egg: 'بيض', cheese: 'جبنة إضافية' };  
+        const INGR = { onion: 'بصل', tomato: 'طماطم', lettuce: 'كابوتشي', sauce: 'صوص شاكو' };
+        let orderID = '';
+      
+        function generateOrderID() {
+            const timestamp = Date.now().toString().slice(-6);
+            const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+            return `SB${timestamp}${random}`;
+        }
+        
+        function showStep(s) {  
+            document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));  
+            document.getElementById('step' + s).classList.add('active');  
+            document.getElementById('footerBar').style.display = (s > 1) ? 'flex' : 'none';  
+              
+            const actionArea = document.getElementById('actionArea');  
+            if(s === 2) {  
+                actionArea.innerHTML = `  
+                    <button class="btn-home" onclick="goHome()">🏠</button>  
+                    <button class="btn-next" onclick="renderInvoice()">الفاتورة ←</button>`;  
+            } else if(s === 3) {
+                if(!orderID) orderID = generateOrderID();
+                document.getElementById('orderNumber').textContent = orderID;
+                actionArea.innerHTML = `  
+                    <button class="btn-home" onclick="goHome()">الرئيسية</button>  
+                    <button class="btn-next" style="background:#25D366; color:white; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);" onclick="sendWhatsApp()">تأكيد 💬</button>`;  
+            }  
+            window.scrollTo(0,0);  
+        }  
+      
+        function changeMainQty(v) {  
+            let el = document.getElementById('mainQtyDisplay');  
+            let val = parseInt(el.innerText) + v;  
+            if(val >= 1) el.innerText = val;  
+        }  
+      
+        function goHome() {  
+            if(confirm("هل تريد العودة للرئيسية وإلغاء هذا الطلب؟")) {  
+                sandwiches = [];
+                orderID = '';  
+                document.getElementById('mainQtyDisplay').innerText = "1";  
+                document.getElementById('custName').value = '';
+                document.getElementById('custPhone').value = '';
+                document.getElementById('custAddress').value = '';
+                document.getElementById('billDetails').innerHTML = '';  
+                document.getElementById('burgerList').innerHTML = '';
+                document.getElementById('totalValue').innerText = '0';
+                showStep(1);  
+                window.scrollTo(0, 0);  
+            }  
+        }  
+      
+        function initSandwiches() {  
+            let qty = parseInt(document.getElementById('mainQtyDisplay').innerText);
+            if(qty > 30) {
+                alert('⚠️ الحد الأقصى للطلب هو 30 ساندوتش');
+                return;
+            }
+            sandwiches = Array.from({length: qty}, (_, i) => ({  
+                id: Date.now() + i,  
+                removals: [],  
+                adds: { burger: 0, egg: 0, cheese: 0 }  
+            }));  
+            renderCustomizer();  
+            showStep(2);  
+        }  
+      
+        function renderCustomizer() {  
+            const list = document.getElementById('burgerList');  
+            list.innerHTML = sandwiches.map((s, i) => `  
+                <div class="card" id="card_${i}">  
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">  
+                        <h3 style="color:var(--primary)">🍔 ساندوتش #${i+1}</h3>  
+                        <b style="background: linear-gradient(135deg, var(--secondary), #ffa500); color: var(--dark); padding:5px 12px; border-radius:10px; box-shadow: 0 2px 5px rgba(255, 179, 0, 0.2);">${calculateSPrice(s)} ج</b>  
+                    </div>  
+                    <div class="option-group">  
+                        <span style="font-weight:bold; font-size:0.95rem; color: var(--remove-color);">🚫 بدون:</span>  
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:5px;">  
+                            ${Object.keys(INGR).map(k => `  
+                                <div class="tile" style="padding:6px; font-size:0.85rem;">  
+                                    <label for="rem_${i}_${k}" style="font-size:0.85rem; cursor: pointer;">${INGR[k]}</label>  
+                                    <input type="checkbox" id="rem_${i}_${k}" ${s.removals.includes(k) ? 'checked' : ''} onchange="toggleRem(${i},'${k}',this.checked)" style="cursor: pointer; width: 18px; height: 18px;">  
+                                </div>  
+                            `).join('')}  
+                        </div>  
+                    </div>  
+                    <div class="option-group">  
+                        <span style="font-weight:bold; font-size:0.95rem; color: var(--add-color);">➕ إضافات:</span>  
+                        ${Object.keys(ADDONS).map(k => `  
+                            <div class="tile">  
+                                <span style="font-weight: 500;">${NAMES[k]} (+${ADDONS[k]}ج)</span>  
+                                <div class="qty-control">  
+                                    <button class="btn-circle" style="width:28px; height:28px; font-size: 1rem;" onclick="updateAdd(${i},'${k}',-1)">−</button>  
+                                    <b style="min-width: 20px; text-align: center;">${s.adds[k]}</b>  
+                                    <button class="btn-circle" style="width:28px; height:28px; font-size: 1rem;" onclick="updateAdd(${i},'${k}',1)">+</button>  
+                                </div>  
+                            </div>  
+                        `).join('')}  
+                    </div>  
+                </div>  
+            `).join('');  
+            updateTotal();  
+        }  
+      
+        function toggleRem(idx, key, checked) {  
+            if(checked) sandwiches[idx].removals.push(key);  
+            else sandwiches[idx].removals = sandwiches[idx].removals.filter(r => r !== key);  
+            updateTotal();  
+        }  
+      
+        function updateAdd(idx, key, val) {  
+            sandwiches[idx].adds[key] = Math.max(0, sandwiches[idx].adds[key] + val);  
+            renderCustomizer();  
+        }  
+      
+        function calculateSPrice(s) {  
+            return BASE_PRICE + Object.keys(ADDONS).reduce((sum, k) => sum + (s.adds[k] * ADDONS[k]), 0);  
+        }  
+      
+        function updateTotal() {  
+            let total = sandwiches.reduce((sum, s) => sum + calculateSPrice(s), 0);  
+            document.getElementById('totalValue').innerText = total;  
+        }  
+      
+        function renderInvoice() {  
+            const bill = document.getElementById('billDetails');  
+            if(sandwiches.length === 0) { showStep(1); return; }
+            
+            if(!orderID) orderID = generateOrderID();  
+      
+            let html = `<div class="card"><h3>🧾 فاتورة الطلب</h3><hr style="margin:10px 0; opacity:0.1;">`;  
+            sandwiches.forEach((s, i) => {  
+                html += `  
+                    <div style="margin-bottom:20px; border-bottom:1px solid #eee; padding-bottom:15px;">  
+                        <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom: 8px;">  
+                            <span>ساندوتش #${i+1}</span>  
+                            <span style="color: var(--primary);">${calculateSPrice(s)} ج</span>  
+                        </div>  
+                        ${s.removals.length ? `<div class="invoice-section section-removals">❌ بدون: ${s.removals.map(r => INGR[r]).join(' - ')}</div>` : ''}  
+                        ${Object.values(s.adds).some(v=>v>0) ? `  
+                            <div class="invoice-section section-adds">  
+                                ${Object.keys(s.adds).filter(k=>s.adds[k]>0).map(k=>`<div>+ ${NAMES[k]} (${s.adds[k]})</div>`).join('')}  
+                            </div>  
+                        ` : ''}  
+                        <div class="item-actions">  
+                            <button class="btn-sm btn-edit" onclick="editItem(${i})">⚙️ تعديل</button>  
+                            <button class="btn-sm btn-delete" onclick="deleteItem(${i})">🗑️ حذف</button>  
+                        </div>  
+                    </div>`;  
+            });  
+            html += `</div>`;  
+            bill.innerHTML = html;  
+            showStep(3);  
+        }  
+      
+        function editItem(idx) {  
+            showStep(2);  
+            setTimeout(() => {
+                document.getElementById(`card_${idx}`).scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }  
+      
+        function deleteItem(idx) {  
+            if(confirm("هل متأكد من حذف هذا الساندوتش؟")) {  
+                sandwiches.splice(idx, 1);  
+                if(sandwiches.length === 0) {  
+                    alert("السلة فارغة، سيتم توجيهك للرئيسية");  
+                    showStep(1);  
+                } else {  
+                    renderInvoice();  
+                    updateTotal();  
+                }  
+            }  
+        }  
+      
+        function sendWhatsApp() {  
+            const n = document.getElementById('custName').value.trim();  
+            const p = document.getElementById('custPhone').value.trim();  
+            const a = document.getElementById('custAddress').value.trim();  
+            if(!n || !p || !a) return alert('برجاء إكمال بياناتك');
+            
+            if(p.length < 10) return alert('برجاء إدخال رقم موبايل صحيح');
+      
+            alert('⚠️ ملاحظة مهمة:\n\nسعر التوصيل يتم تحديده حسب موقعك والمنطقة التي تختارها وسيتم تأكيده عند استقبال طلبك.\n\nشكراً لك! 🙏');
+      
+            let msg = `*🍔 طلب جديد - شاكو برجر*\n`;
+            msg += `📦 رقم الطلب: ${orderID}\n`;
+            msg += `👤 الاسم: ${n}\n📞 الهاتف: ${p}\n📍 العنوان: ${a}\n`;  
+            msg += `--------------------------\n\n`;  
+      
+            sandwiches.forEach((s, i) => {  
+                msg += `*(${i+1}) ساندوتش شاكو*\n`;  
+                if(s.removals.length) msg += `🚫 بدون: ${s.removals.map(r => INGR[r]).join('، ')}\n`;  
+                Object.keys(s.adds).forEach(k => {  
+                    if(s.adds[k] > 0) msg += `➕ إضافة: ${NAMES[k]} (${s.adds[k]})\n`;  
+                });  
+                msg += `💰 السعر: ${calculateSPrice(s)} ج\n\n`;  
+            });  
+      
+            msg += `✅ *الإجمالي (بدون توصيل): ${document.getElementById('totalValue').innerText} جنيه*\n`;  
+            msg += `📦 *سعر التوصيل: سيتم تحديده حسب العنوان*\n`;
+            msg += `⏰ *الوقت: ${new Date().toLocaleTimeString('ar-EG')}*`;
+            window.open(`https://wa.me/201556849413?text=${encodeURIComponent(msg)}`, '_blank');  
+        }  
+    </script>  
+</body>  
+</html>
