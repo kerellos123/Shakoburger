@@ -1,0 +1,17 @@
+{
+  "name": "travel-agent-server",
+  "version": "1.0.0",
+  "description": "Travel agency management system - ticket sales, customers, multi-currency accounts",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3"
+  }
+}

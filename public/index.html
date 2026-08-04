@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shako Travel | تسجيل الدخول</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-card">
+      <button class="login-lang-toggle" id="langBtn" type="button" data-i18n="lang_switch">English</button>
+      <img class="login-logo" src="assets/logo.svg" alt="logo">
+      <div class="login-title" data-i18n="app_name">شاكو للسفر والسياحة</div>
+      <div class="login-tagline" data-i18n="app_tagline">نظام إدارة مبيعات التذاكر والحسابات</div>
+
+      <div class="login-error" id="loginError" data-i18n="login_error">اسم المستخدم أو كلمة المرور غير صحيحة</div>
+
+      <form id="loginForm">
+        <div class="field">
+          <label data-i18n="username">اسم المستخدم</label>
+          <input type="text" id="username" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label data-i18n="password">كلمة المرور</label>
+          <input type="password" id="password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="loginBtn" data-i18n="login_btn">دخول</button>
+      </form>
+
+      <div class="login-hint">admin / admin123</div>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    document.getElementById('langBtn').addEventListener('click', () => I18N.toggle());
+
+    if (API.token()) {
+      location.href = 'app.html';
+    }
+
+    const form = document.getElementById('loginForm');
+    const errBox = document.getElementById('loginError');
+    const btn = document.getElementById('loginBtn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errBox.classList.remove('show');
+      btn.disabled = true;
+      const originalText = btn.textContent;
+      btn.textContent = '...';
+      try {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        const data = await API.post('/auth/login', { username, password });
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        location.href = 'app.html';
+      } catch (err) {
+        errBox.classList.add('show');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
+    });
+  </script>
+</body>
+</html>

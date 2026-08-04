@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shako Travel</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <img src="assets/logo.svg" alt="logo">
+        <div>
+          <b data-i18n="app_name">شاكو للسفر والسياحة</b>
+          <span data-i18n="app_tagline">نظام إدارة مبيعات التذاكر والحسابات</span>
+        </div>
+      </div>
+      <ul class="nav-list" id="navList">
+        <li><a href="#/dashboard" data-route="dashboard"><span class="ic">🏠</span><span data-i18n="nav_dashboard">الرئيسية</span></a></li>
+        <li><a href="#/tickets" data-route="tickets"><span class="ic">🎫</span><span data-i18n="nav_tickets">التذاكر</span></a></li>
+        <li><a href="#/customers" data-route="customers"><span class="ic">👥</span><span data-i18n="nav_customers">العملاء</span></a></li>
+        <li><a href="#/accounts" data-route="accounts"><span class="ic">💰</span><span data-i18n="nav_accounts">الحسابات</span></a></li>
+        <li><a href="#/airlines" data-route="airlines"><span class="ic">✈️</span><span data-i18n="nav_airlines">شركات الطيران</span></a></li>
+        <li><a href="#/currencies" data-route="currencies"><span class="ic">💱</span><span data-i18n="nav_currencies">العملات</span></a></li>
+        <li><a href="#/reports" data-route="reports"><span class="ic">📊</span><span data-i18n="nav_reports">التقارير</span></a></li>
+      </ul>
+      <div class="sidebar-foot">
+        <div class="user-chip">
+          <span class="avatar" id="userAvatar">?</span>
+          <span id="userName">-</span>
+        </div>
+        <button class="btn btn-outline btn-block btn-sm" id="logoutBtn" data-i18n="logout" style="color:#e6ecfb;border-color:rgba(255,255,255,0.25);">خروج</button>
+      </div>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <h1 id="pageTitle">-</h1>
+        <div class="topbar-actions">
+          <button class="pill-toggle" id="langBtn" data-i18n="lang_switch">English</button>
+        </div>
+      </div>
+      <div class="content" id="content">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modalBox"></div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/pages/dashboard.js"></script>
+  <script src="js/pages/tickets.js"></script>
+  <script src="js/pages/customers.js"></script>
+  <script src="js/pages/accounts.js"></script>
+  <script src="js/pages/airlines.js"></script>
+  <script src="js/pages/currencies.js"></script>
+  <script src="js/pages/reports.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
