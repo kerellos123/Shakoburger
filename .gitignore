@@ -1,0 +1,42 @@
+# --- Node / Next.js (admin) ---
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# --- Firebase ---
+firebase/functions/lib/
+firebase/functions/node_modules/
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+ui-debug.log
+
+# --- Flutter / Dart (mobile) ---
+mobile/.dart_tool/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/.packages
+mobile/build/
+mobile/.pub-cache/
+mobile/.pub/
+mobile/android/local.properties
+mobile/ios/Flutter/flutter_export_environment.sh
+mobile/lib/core/localization/generated/
+mobile/*.g.dart
+mobile/*.freezed.dart
+
+# --- Environment / secrets ---
+.env
+.env.local
+.env.*.local
+*.pem
+serviceAccountKey.json
+google-services.json
+GoogleService-Info.plist
+
+# --- OS / editor ---
+.DS_Store
+.idea/
+.vscode/

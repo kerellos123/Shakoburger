@@ -1,0 +1,125 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function role() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && role() == 'admin';
+    }
+
+    function isServant() {
+      return isSignedIn() && role() == 'servant';
+    }
+
+    function isServantOf(memberId) {
+      return isServant() &&
+        get(/databases/$(database)/documents/users/$(memberId)).data.assignedServantId == request.auth.uid;
+    }
+
+    function isSelf(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // ---------- users ----------
+    match /users/{uid} {
+      allow read: if isAdmin() || isServant() || isSelf(uid);
+      allow create: if isSignedIn() && isSelf(uid);
+      allow update: if isAdmin() || isSelf(uid) || isServantOf(uid);
+      allow delete: if isAdmin();
+
+      match /favorites/{docId} {
+        allow read, write: if isSelf(uid) || isAdmin();
+      }
+    }
+
+    // ---------- meetings ----------
+    match /meetings/{meetingId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ---------- attendance ----------
+    match /attendance/{attendanceId} {
+      allow read: if isAdmin() ||
+        (isServant() && isServantOf(resource.data.memberId)) ||
+        (isSignedIn() && resource.data.memberId == request.auth.uid);
+      allow create, update: if isAdmin() ||
+        (isServant() && isServantOf(request.resource.data.memberId)) ||
+        (isSignedIn() && request.resource.data.method == 'qr' && request.resource.data.memberId == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    // ---------- followUps ----------
+    match /followUps/{followUpId} {
+      allow read: if isAdmin() || (isServant() && isServantOf(resource.data.memberId));
+      allow write: if isAdmin() || (isServant() && isServantOf(request.resource.data.memberId));
+    }
+
+    // ---------- notifications ----------
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn();
+      allow create: if isAdmin() || isServant();
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------- sermons / devotionals / news / library / activities / quizzes ----------
+    match /sermons/{id} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /devotionals/{id} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /news/{id} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /library/{id} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /activities/{activityId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+
+      match /registrations/{uid} {
+        allow read: if isAdmin() || isSelf(uid);
+        allow create, update: if isSelf(uid);
+        allow delete: if isAdmin() || isSelf(uid);
+      }
+    }
+
+    match /quizzes/{quizId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+
+      match /attempts/{uid} {
+        allow read: if isAdmin() || isSelf(uid);
+        allow create, update: if isSelf(uid);
+      }
+    }
+
+    match /leaderboard/{uid} {
+      allow read: if isSignedIn();
+      allow write: if false; // Cloud Functions only (Admin SDK bypasses rules)
+    }
+
+    match /reportsCache/{period} {
+      allow read: if isAdmin() || isServant();
+      allow write: if false; // Cloud Functions only
+    }
+  }
+}
