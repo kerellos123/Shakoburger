@@ -1,0 +1,56 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function role() {
+      return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && role() == 'admin';
+    }
+
+    // User profile photos: owner or admin can write, any signed-in user can read.
+    match /users/{uid}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (request.auth.uid == uid || isAdmin())
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    // Sermons: video/audio/pdf, admin-managed, public read for signed-in users.
+    match /sermons/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Devotionals: images/videos, admin-managed.
+    match /devotionals/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // News images/videos, admin-managed.
+    match /news/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Spiritual library files (PDFs/audio), admin-managed.
+    match /library/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Church logo / shared assets.
+    match /assets/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

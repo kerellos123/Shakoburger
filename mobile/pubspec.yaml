@@ -1,0 +1,68 @@
+name: st_paul_family
+description: "St. Paul the Apostle Family — Church Youth Meeting App"
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Firebase
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.1
+  cloud_firestore: ^5.4.4
+  firebase_storage: ^12.3.4
+  firebase_messaging: ^15.1.3
+  cloud_functions: ^5.1.4
+
+  # State management & routing
+  flutter_riverpod: ^2.6.1
+  go_router: ^14.3.0
+
+  # UI & UX
+  cupertino_icons: ^1.0.8
+  fl_chart: ^0.69.0
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
+  intl: ^0.19.0
+  flutter_svg: ^2.0.10+1
+  image_picker: ^1.1.2
+
+  # QR attendance
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^6.0.2
+
+  # Offline support & local persistence
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  connectivity_plus: ^6.0.5
+
+  # Calendar
+  table_calendar: ^3.1.2
+
+  # Media playback
+  video_player: ^2.9.2
+  just_audio: ^0.9.40
+  youtube_player_flutter: ^9.1.1
+  url_launcher: ^6.3.1
+  share_plus: ^10.1.1
+
+  # Utilities
+  equatable: ^2.0.5
+  uuid: ^4.5.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true # enables lib/l10n ARB -> AppLocalizations codegen (see l10n.yaml)
+  assets:
+    - assets/images/
